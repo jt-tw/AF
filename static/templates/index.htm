@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<title>{{title}}</title>
+		<!-- Bootstrap core CSS -->
+		<link href="/libs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+		<link href="/css/style.css" rel="stylesheet">
+		<script type="text/javascript" src="libs/jquery/dist/jquery.min.js"></script>
+		<script type="text/javascript" src="libs/bootstrap/js/tooltip.js"></script>
+		<script type="text/javascript" src="libs/underscore/underscore-min.js"></script>
+		<script type="text/javascript">
+			// _.templateSettings = {
+			// 	interpolate: /\{\{(.+?)\}\}/g
+			// };
+
+			$(document).ready(function(){
+				$('#frm-search').submit(function (event) {
+					var frm = $(this);
+
+					$.ajax({
+						type: frm.attr('method'),
+						url: frm.attr('action') || '/search',
+						data: frm.serialize(),
+						dataType: 'json',
+						success: function (data) {
+							if (data.length > 0) {
+								var $ul = $('<ul class="list-group" id="ul-books" />');
+								// append ul tag
+								$('#books-container')
+									.empty()
+									.append($ul);
+
+								var template = _.template('\
+								<li class="list-group-item row">\
+									<div class="col-xs-2">\
+										<img src="<%= image %>" class="img-responsive" alt="name" />\
+									</div>\
+									<div class="col-xs-10"><h4><%= name %></h4></div>\
+								</li>');
+
+								// append li tags for books
+								_.each(data, function (book) {
+									console.log(book);
+									$ul.append(template(book));
+								});
+							}
+							else {
+								$('#books-container')
+									.empty()
+									.append('<p id="p-message">No books matched.</p>');
+							}
+						}
+					});
+					event.preventDefault();
+				});
+			});
+		</script>
+	</head>
+	<body>
+		<div class="container">
+			<div class="page-header">
+				<h1>{{header}}</h1>
+			</div>
+			<nav class="navbar navbar-default" role="navigation">
+				<div class="container-fluid">
+					<div class="collapse navbar-collapse" id="navbar-collapse">
+						<form class="navbar-form navbar-right" role="search" method="get" action="/search" id="frm-search">
+							<div class="form-group">
+								<input type="text" class="form-control" name="keyword" placeholder="Search by name">
+							</div>
+							<button type="submit" class="btn btn-default">Submit</button>
+						</form>
+					</div>
+				</div>
+			</nav>
+			<!-- <div class="row space">
+				<div class="col-xs-12"> -->
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h2 class="panel-title">Books</h2>
+				</div>
+				<div class="panel-body" id="books-container">
+					<ul class="list-group" id="ul-books">
+						{{#each books}}
+						<li class="list-group-item row">
+							<div class="col-xs-2">
+								<img src="{{image}}" class="img-responsive" alt="name" />
+							</div>
+							<div class="col-xs-10"><h4>{{name}}</h4></div>
+						</li>
+						{{/each}}
+					</ul>
+				</div>
+			</div>
+				<!-- </div>
+			</div> -->
+		</div>
+	</body>
+</html>
