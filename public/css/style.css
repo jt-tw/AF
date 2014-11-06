@@ -1,0 +1,13 @@
+.space {
+	margin-top: 10px;
+	margin-bottom: 15px;
+}
+
+li {
+	list-style-type: none;
+}
+
+ul.list-group {
+	margin-left: 20px;
+	margin-right: 20px;
+}
