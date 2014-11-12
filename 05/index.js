@@ -6,16 +6,16 @@ var xml2js = require('xml2js');
 
 Program
 	.version('0.0.2')
-	.option('-i, --input [input]', 'input file, type of xml')
+	.option('-f, --file [file]', 'input file, type of xml')
 	.option('-o, --output [output]', 'output file [output.json]', 'output.json')
 	.parse(process.argv);
 
-if (!Program.input) {
+if (!Program.file) {
 	console.log("Error: input file is missing.");
 	Program.help();
 }
 
-var file = Path.join(__dirname, Program.input);
+var file = Path.join(__dirname, Program.file);
 
 Q.nfcall(Fs.readFile, file, "utf-8")
 	.then(function (data) {
