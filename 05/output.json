@@ -1,20 +1,36 @@
 {
    "book": [
       {
-         "name": "Practical Node.js: Building Real-World Scalable Web Apps",
-         "image": "http://ecx.images-amazon.com/images/I/41pquei3uWL._AA160_.jpg"
+         "name": [
+            "Practical Node.js: Building Real-World Scalable Web Apps"
+         ],
+         "image": [
+            "http://ecx.images-amazon.com/images/I/41pquei3uWL._AA160_.jpg"
+         ]
       },
       {
-         "name": "Node.js in Action",
-         "image": "http://ecx.images-amazon.com/images/I/51twwFigyiL._AA160_.jpg"
+         "name": [
+            "Node.js in Action"
+         ],
+         "image": [
+            "http://ecx.images-amazon.com/images/I/51twwFigyiL._AA160_.jpg"
+         ]
       },
       {
-         "name": "Node.js the Right Way: Practical, Server-Side JavaScript That Scales",
-         "image": "http://ecx.images-amazon.com/images/I/51csKbX1NhL._AA160_.jpg"
+         "name": [
+            "Node.js the Right Way: Practical, Server-Side JavaScript That Scales"
+         ],
+         "image": [
+            "http://ecx.images-amazon.com/images/I/51csKbX1NhL._AA160_.jpg"
+         ]
       },
       {
-         "name": "Pro ASP.NET MVC 5",
-         "image": "http://ecx.images-amazon.com/images/I/51ZaZX%2BvpDL._AA160_.jpg"
+         "name": [
+            "Pro ASP.NET MVC 5"
+         ],
+         "image": [
+            "http://ecx.images-amazon.com/images/I/51ZaZX%2BvpDL._AA160_.jpg"
+         ]
       }
    ]
 }
