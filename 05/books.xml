@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<books>
+	<book>
+		<name>Practical Node.js: Building Real-World Scalable Web Apps</name>
+		<image>http://ecx.images-amazon.com/images/I/41pquei3uWL._AA160_.jpg</image>
+	</book>
+	<book>
+		<name>Node.js in Action</name>
+		<image>http://ecx.images-amazon.com/images/I/51twwFigyiL._AA160_.jpg</image>
+	</book>
+	<book>
+		<name>Node.js the Right Way: Practical, Server-Side JavaScript That Scales</name>
+		<image>http://ecx.images-amazon.com/images/I/51csKbX1NhL._AA160_.jpg</image>
+	</book>
+	<book>
+		<name>Pro ASP.NET MVC 5</name>
+		<image>http://ecx.images-amazon.com/images/I/51ZaZX%2BvpDL._AA160_.jpg</image>
+	</book>
+</books>
