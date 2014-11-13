@@ -19,15 +19,30 @@ var knex = require('knex')({
 
 var bookshelf = require('bookshelf')(knex);
 
-var Path = require('path'),
-	 Fs = require('fs'),
-	 Q = require('q'),
-	 xml2js = require('xml2js')
-	 cheerio = require('cheerio')
-	 _ = require('lodash');
+var Q = require('q');
+var Fs = require('fs');
+var Path = require('path');
+var Cheerio = require('cheerio');
+var _ = require('lodash');
 
 var file = Path.join(__dirname, argv.file);
-var $, document;
+
+var extract = function (content) {
+	var $ = Cheerio.load(content, { ignoreWhitespace : true, xmlMode : true });
+
+	var source = $(argv.entity);
+
+	if (source.length == 0 ) throw 'Failed to load entity';
+
+	return _.map(source.children(), function (item) {
+		return {
+			name: item.name,
+			value: $(item).text(),
+			type: item.attribs.type,
+			size: item.attribs.size || 11
+		};
+	});
+};
 
 Q.nfcall(Fs.readFile, file, "utf-8")
 	.then(function (data) {
