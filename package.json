@@ -17,11 +17,16 @@
   },
   "homepage": "https://github.com/jt-tw/AF",
   "dependencies": {
-    "commander": "^2.5.0",
+    "bookshelf": "^0.7.9",
+    "cheerio": "^0.18.0",
     "handlebars": "^2.0.0",
     "hapi": "^7.2.0",
+    "knex": "^0.7.3",
     "lodash": "^2.4.1",
+    "mysql": "^2.5.3",
+    "mysql-promise": "^1.3.0",
     "q": "^1.1.1",
-    "xml2js": "^0.4.4"
+    "xml2js": "^0.4.4",
+    "yargs": "^1.3.3"
   }
 }
