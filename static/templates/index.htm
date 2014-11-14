@@ -31,7 +31,7 @@
 							if (data.length > 0) {
 								var $ul = $('<ul class="list-group" id="ul-books" />');
 								// append ul tag
-								$('#books-container')
+								$('#content-container')
 									.empty()
 									.append($ul);
 
@@ -50,7 +50,7 @@
 								});
 							}
 							else {
-								$('#books-container')
+								$('#content-container')
 									.empty()
 									.append('<p id="p-message">No books matched.</p>');
 							}
@@ -84,7 +84,7 @@
 				<div class="panel-heading">
 					<h2 class="panel-title">Books</h2>
 				</div>
-				<div class="panel-body" id="books-container">
+				<div class="panel-body" id="content-container">
 					<ul class="list-group" id="ul-books">
 						{{#each books}}
 						<li class="list-group-item row">

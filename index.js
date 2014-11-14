@@ -1,6 +1,9 @@
 var Hapi = require('hapi');
 var Path = require('path');
 var _ = require('lodash');
+var Joi = require('joi');
+
+var mongoose = require('mongoose');
 
 var server = new Hapi.Server(8001);
 
@@ -26,6 +29,47 @@ var data = [
 		image: 'http://ecx.images-amazon.com/images/I/51ZaZX%2BvpDL._AA160_.jpg'
 	}
 ];
+
+var validation = {
+	name: Joi.string().min(5).max(30).required(),
+	email: Joi.string().email(),
+	password: Joi.string().regex(/[a-zA-Z0-9]{3,30}/),
+	another_password: Joi.string().regex(/[a-zA-Z0-9]{3,30}/),
+	sex: Joi.number().min(1).max(2)
+};
+
+var register = function (request, reply) {
+	mongoose.connect('mongodb://localhost/af');
+
+	var schema = {
+		name: String
+		, email: String
+		, password: String
+		, sex: Number
+		, createdDate: { type: Date, default: Date.now }
+	};
+
+	var Member = mongoose.model('Members', schema);
+
+	delete request.payload.another_password;
+
+	var user = new Member(request.payload);
+
+	user.save(function (err, result) {
+		if (err) {
+			console.log(err);
+			var context = {
+				title: 'Registration Page',
+				error: 'Failed to register, please try again'
+			};
+			reply.view('register', context);
+		}
+		else {
+			console.log('Registered.');
+			reply.redirect('/');
+		}
+	});
+};
 
 server.route({
 	method: 'GET',
@@ -53,11 +97,33 @@ server.route({
 	}
 });
 
+// server.route({
+// 	method: 'POST',
+// 	path: '/',
+// 	handler: function (request, reply) {
+// 		request.payload.search;
+// 	},
+// });
+
+server.route({
+	method: 'GET',
+	path: '/register',
+	handler: function (request, reply) {
+		var context = {
+			title: 'Registration Page'
+		};
+		reply.view('register', context);
+	}
+});
+
 server.route({
 	method: 'POST',
-	path: '/',
-	handler: function (request, reply) {
-		request.payload.search;
+	path:  '/register',
+	handler: register,
+	config: {
+    validate: {
+	  	payload: validation
+	  }
 	}
 });
 
