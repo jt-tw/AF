@@ -7,91 +7,111 @@ var argv = require('yargs')
 				.alias('table', 't')
 				.argv;				
 
-var knex = require('knex')({
-  client: 'mysql',
-  connection: {
-    host     : 'localhost',
-    user     : 'root',
-    password : '',
-    database : argv.database
-  }
-});
-
-var bookshelf = require('bookshelf')(knex);
-
 var Q = require('q');
 var Fs = require('fs');
 var Path = require('path');
 var Cheerio = require('cheerio');
 var _ = require('lodash');
 
-var file = Path.join(__dirname, argv.file);
+var knex = require('knex')({
+  client: 'mysql',
+  connection: {
+	 host     : 'localhost',
+	 user     : 'root',
+	 password : ''
+}
+});
 
-var extract = function (content) {
+var file = Path.join(__dirname, 'input.xml');
+
+var traverse = function (content) {
 	var $ = Cheerio.load(content, { ignoreWhitespace : true, xmlMode : true });
 
 	var source = $(argv.entity);
 
 	if (source.length == 0 ) throw 'Failed to load entity';
 
-	return _.map(source.children(), function (item) {
-		return {
-			name: item.name,
-			value: $(item).text(),
-			type: item.attribs.type,
-			size: item.attribs.size || 11
+	// each row
+	return _.map(source, function (item) {
+		return { 'columns': _.map($(item).children(), function (item) {
+								return {
+									name: item.name,
+									value: $(item).text(),
+									type: item.attribs.type,
+									size: item.attribs.size || 11
+								};
+							})
 		};
 	});
 };
 
-Q.nfcall(Fs.readFile, file, "utf-8")
-	.then(function (data) {
+var create = function (data) {
+	var table = function (table) {
+		table.increments('id').primary();
+    _.each(_.first(data).columns, function (column) {
+    	switch (column.type.toLowerCase()) {
+    		case 'integer':
+    			table.integer(column.name);
+    			break;
+  			case 'datetime':
+  				table.dateTime(column.name);
+  				break;
+				default:
+    			table.string(column.name, column.size)
+    			break;
+    	};
+    });
+	};
 
-		$ = cheerio.load(data, { xmlMode: true });
+	return knex
+				.schema
+				.raw('CREATE DATABASE IF NOT EXISTS ' + argv.database)
+				.raw('USE ' + argv.database)
+				.dropTableIfExists(argv.table)
+				.createTable(argv.table, table)
+				.return(data);
+};
 
-		document = $(argv.entity);
-		if (document.length == 0) throw 'No matching entity in the xml file.';
+var insert = function (data) {
+	var models = _.map(data, function (row) {
+		var data = {};
 
-		var schema = {};
-
-		// create schema { name: type }
-		document.first().children().each(function (index, element) {
-			schema[element.name] = element.attribs['type'];
+		_.each(row.columns, function (column) {
+			data[column.name] = column.value;
 		});
 
-		var table = function (table) {
-			table.increments('id').primary();
-	    _.each(_.keys(schema), function (key) {
-	    	if (schema[key] == 'integer') {
-	    		table.integer(key);
-	    	} else {
-	    		table.string(key);
-	    	}
-	    });
-		};
+		return data;
+	});
 
-		return knex.schema
-						.dropTableIfExists(argv.table)
-						.createTable(argv.table, table);
-	})
-	.then(function () {
-		var Post = bookshelf.Model.extend({
-			tableName: argv.table
-		});
+	knex.destroy();
+	knex = require('knex')({
+	  client: 'mysql',
+	  connection: {
+			 host     : 'localhost',
+			 user     : 'root',
+			 password : '',
+			 database : argv.database
+		}
+	});
 
-		document.each(function(index, entity) {
-			var data = {};
+	var bookshelf = require('bookshelf')(knex);
 
-			$(entity).children().each(function (index, element) {
-				data[element.name] = $(element).text();
-			});
+	var Model = bookshelf.Model.extend({ tableName: argv.table });
 
-			return new Post(data).save().then(function(model) { console.log(JSON.stringify(model, null, 3)); });
-		});
-	})
+	var Collection = bookshelf.Collection.extend({ model: Model });
+	
+	return Collection.forge(models).invokeThen('save');
+};
+
+Q.nfcall(Fs.readFile, file, 'utf-8')
+	.then(traverse)
+	.then(create)
+	.then(insert)
 	.catch(function (err) {
 		console.log(err);
 	})
-	.done();
+	.fin(function () {
+		knex.destroy();
+	});
 
 	//node index -f input.xml -e post -d af --table post
